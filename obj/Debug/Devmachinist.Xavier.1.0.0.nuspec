@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Devmachinist.Xavier</id>
+    <version>1.0.0</version>
+    <authors>Matthew Teague</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="Microsoft.AspNetCore.Authorization" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Connections.Abstractions" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.CookiePolicy" version="2.2.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Connections.Client" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Connections.Common" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.SignalR.Client" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.SignalR.Common" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp" version="4.4.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp.Scripting" version="4.4.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.EntityFrameworkCore" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="7.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Primitives" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.NETCore.Platforms" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.VisualStudio.Web.CodeGeneration.Design" version="7.0.4" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.VisualStudio.Web.CodeGeneration.Utils" version="7.0.4" exclude="Build,Analyzers" />
+        <dependency id="System.CodeDom" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.Net.Http.Json" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.ServiceModel.Primitives" version="6.0.0-preview1.23060.3" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encodings.Web" version="7.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\x\source\repos\xavier\bin\Debug\net7.0\Xavier.dll" target="lib\net7.0\Xavier.dll" />
+  </files>
+</package>
