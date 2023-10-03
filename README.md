@@ -45,10 +45,13 @@ Xavier Framework supports server-side rendering, which provides benefits like im
 
 1. Configure your web application to use Xavier Framework.
 2. Use the `app.MapXavierNodes` method in your application's configuration to map the Xavier nodes to specific routes. This method specifies the URL pattern and the destination directory for Xavier pages.
-3. Set the static fallback for the Xavier:
+3. Set the static fallback for Xavier:
 
 ```csharp
 Xavier.Memory.StaticFallback("c:/fallback/index.html");
+app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
+
+
 ```
 
 ## Initialization
