@@ -66,17 +66,16 @@ using Xavier.AOT;
  Call the `Xavier.Memory.Init` method to initialize Xavier with the desired parameters. This method builds your assembly into the specified destination. The last part of the destination path should have a `.js` extension.
 
 ```csharp
-await Xavier.Memory.Init(root, destination, assembly);
+var memory = new Memory();
+await memory.Init(root, destination, assembly);
 ```
 
 or with AOT
 
 ```csharp
-AOT.Variables.Root = Environment.CurrentDirectory; // Your application root
-AOT.Variables.Destination = Environment.CurrentDirectory + "/Live/Xavier"; // Adds the .js extension
-AOT.Variables.XAssembly = typeof(Program).Assembly; // Your assembly... This assumes you have a Program class.
-
-builder.Services.AddHostedService<AOT.XAOT>();
+var memory = new Memory();
+var aot = new XAOT();
+await aot.Init(memory,root,destination,assembly);
 ```
 
 ## Examples
@@ -94,16 +93,21 @@ let username = "";
 var msalInstance = {};
 var target = '${this.target}'
 
-// JavaScript code here
 
-x{ 
-    @foreach( var k in items){
-
-    }
-}x
 
 // More JavaScript code here
 }}
+
+// C# code here
+
+x{
+    var Items = new[]{"item1","item2","item3"};
+    @foreach( var k in items){
+      <div>
+        @k
+      </div>
+    }
+}x
 ```
 
 Here is the code behind required for each component.
@@ -116,8 +120,6 @@ namespace MyNamespace{
     public partial class MyComponent : XavierNode
     {
         new public bool? ShouldRender = true;
-        public string[] Items = new[]{"item1","item2","item3"};
-
         public MyComponent(XavierNode xavier) : base(xavier){
         }
         public MyComponent(){
