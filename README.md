@@ -131,7 +131,7 @@ namespace MyNamespace{
 ## Information
 
 - Xavier is experimental and should be treated as such.
-- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the Xavier.Memory.Init(root,destination,assembly) for production.
+- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the memory.Init(root,destination,assembly) for production.
 
 ## Contributing
 
