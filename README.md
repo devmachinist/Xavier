@@ -104,7 +104,7 @@ var target = '${this.target}'
 // C# code here
 
 x{
-    var Items = new[]{"item1","item2","item3"};
+    var items = new[]{"item1","item2","item3"};
     @foreach( var k in items){
       <div>
         @k
