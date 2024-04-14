@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 
-// compile with C# 8.0
 namespace Xavier
 {
     public static class TransposeEFToJavascript

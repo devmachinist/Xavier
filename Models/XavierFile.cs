@@ -1,38 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Channels;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.CodeDom;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using System.Text.RegularExpressions;
-using NuGet.Packaging;
-using System.Dynamic;
-using Newtonsoft.Json.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
-using IronPython;
-using IronPython.Hosting;
-using static IronPython.Modules._ast;
 using Microsoft.Scripting.Hosting;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Xavier
 {
@@ -40,16 +14,6 @@ namespace Xavier
     /// This is a Xavier FIle model with all methods and options.
     /// It includes a C# attribute handler to add types as parameters for taking query strings.
     /// </summary>
-    [HtmlTargetElement("my-tag")]
-    public class MyTagHelper : TagHelper
-    {
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
-        {
-            output.TagName = "div";
-            output.Attributes.SetAttribute("class", "my-class");
-            output.Content.SetHtmlContent("<p>Hello, world!</p>");
-        }
-    }
 
     public class XavierNode
     {
@@ -337,9 +301,6 @@ async replaceElements(target){{
         this.InnerHTML = body;
         this.Element.insertAdjacentHTML('afterbegin',`{Node.Content(memory).Replace("/", "\\/").Replace("`", "\\`")}`);
                 
-    window.addEventListener('DOMContentLoaded', (event) => {{
-            this.renderXidElements(document.body);
-       }});
       if(this.ScriptRender === true){{
   var script = document.createElement('script');
   script.setAttribute(""async"", ""async"");
@@ -388,13 +349,11 @@ async renderXidElements(el){{
              Array.from(el.children).forEach(async (child)=> 
                 {{  
                     await item.renderXidElements(child);
-                        window.addEventListener('DOMContentLoaded', (event) => {{
        
                     Array.from(child.children).forEach(async (gchild)=> 
                     {{  
                         await item.renderXidElements(gchild)
                         }});
-                    }});
 
 
                 }});
@@ -425,8 +384,6 @@ let element = window[xid].Element
 let attributeObserver = new MutationObserver(mutations => {{
   mutations.forEach(mutation => {{
     if (mutation.type === ""attributes"") {{
-        console.log(`${{this.Name}} Changed!`);
-        console.log(this);
     }}
   }});
 }});
@@ -460,10 +417,18 @@ async Render(){{
         }}
     }}
     catch(ex){{console.log(ex);
+    }}
+}}
+AddListener(){{    
+    window.addEventListener('DOMContentLoaded', (event) => {{
 
+        if(window.location.pathname === {Node.Name}.Route && {Node.Name}.ShouldRender === true || {Node.Name}.Route === '' && {Node.Name}.ShouldRender === true){{
+        this.renderXidElements(document.body);
+        }}
+    }});
 }}
     ");
-            sb.AppendLine("} }");
+            sb.AppendLine("}");
             GC.Collect();
             return sb.ToString();
         }
@@ -744,49 +709,12 @@ async Render(){{
                 return "";
             }
         }
-        public class XTagHelper : TagHelper{
-            public string Name { get; set; }
-            public XTagHelper(string name)
-            {
-                Name = name;
-
-            }
-            public override async Task ProcessAsync(TagHelperContext c, TagHelperOutput o)
-            {
-                await Task.Run(() =>
-                {
-                    o.TagName = Name;
-                });
-
-            }
-            }
-        public XTagHelper XHelper { get; set; }
-        public TagHelperContext XTagContext {get;set;}
-        public TagHelperOutput XTagOutput { get; set; }
-        public XavierNode(XavierNode node)
-        {
-            XAssembly = node.XAssembly;
-            Name = node.Name;
-            Code = node.Code;
-            Scripts = node.Scripts;
-            Path = node.Path;
-            dataset = node.dataset;
-            Xid = node.Xid;
-            Route = node.Route;
-            state = node.state;
-            PyImports = node.PyImports;
-            ShouldRender = node.ShouldRender;
-            BaseUrl = node.BaseUrl;
-            Authorize = node.Authorize;
-                new XTagHelper(Name);
-        }
         public XavierNode()
         {
             this.Name = this.GetType().Name;
             this.Path = "";
             this.state = new State();
             this.Code = "";
-                new XTagHelper(Name);
 
 
         }
@@ -796,7 +724,6 @@ async Render(){{
             Path = path;
             XAssembly = assembly;
             Code = File.ReadAllText(Path);
-                new XTagHelper(Name);
 
             this.GetPropertiesFromClasses();
 
@@ -805,21 +732,6 @@ async Render(){{
             Renderer renderer = new Renderer(memory);
             this.state = new State();
             renderer.Render(this);
-        }
-        public ControllerContext SetContext()
-        {
-            //Instantiate a new ControllerContext:
-            ControllerContext controllerContext = new ControllerContext();
-            //Set the HttpContext:
-            controllerContext.HttpContext = new DefaultHttpContext()
-            {
-
-            };
-            //Set the RouteData:
-            controllerContext.RouteData = new RouteData();
-            //Set the ActionDescriptor:
-            controllerContext.ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor();
-            return controllerContext;
         }
         public IAsyncResult Invoke(Func<Task<Type>> value)
         {

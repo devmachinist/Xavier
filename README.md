@@ -17,10 +17,10 @@ The Xavier Framework is a powerful framework designed to facilitate the developm
 
 ## Installation
 
-To use the Xavier Framework, follow these steps:
+To use Xavier, follow these steps using the cli:
 
-- Download the Xavier nuget package Devmachinist.Xavier and for the aot compiler Devmachinist.Xavier.AOT
-
+- dotnet add package Devmachinist.Xavier
+- or dotnet add package Devmachinist.Xavier.AOT
 ## Usage
 
 ### Template Syntax
@@ -48,7 +48,11 @@ Xavier Framework supports server-side rendering, which provides benefits like im
 3. Set the static fallback for the Xavier:
 
 ```csharp
-Xavier.Memory.StaticFallback("c:/fallback/index.html");
+memory.StaticFallback("c:/fallback/index.html");
+
+//app build
+app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
+
 ```
 
 ## Initialization
@@ -59,24 +63,31 @@ To initialize Xavier in a .NET app, follow these steps:
 
 ```csharp
 using Xavier;
-//or
+//and
 using Xavier.AOT;
 ```
 
- Call the `Xavier.Memory.Init` method to initialize Xavier with the desired parameters. This method builds your assembly into the specified destination. The last part of the destination path should have a `.js` extension.
+ Call the `Init` method to initialize Xavier with the desired parameters. This method builds your assembly into the specified destination. The last part of the destination path should have a `.js` extension.
 
 ```csharp
-await Xavier.Memory.Init(root, destination, assembly);
+var memory = new Xavier.Memory();
+
+await memory.Init(root, destination, assembly);
 ```
 
-or with AOT
+Or with AOT, pass in your memory object without calling memory.Init()...
 
 ```csharp
-AOT.Variables.Root = Environment.CurrentDirectory; // Your application root
-AOT.Variables.Destination = Environment.CurrentDirectory + "/Live/Xavier"; // Adds the .js extension
-AOT.Variables.XAssembly = typeof(Program).Assembly; // Your assembly... This assumes you have a Program class.
-
-builder.Services.AddHostedService<AOT.XAOT>();
+Parallel.Invoke(async () =>
+    {
+     await aot.Init(
+                    memory,
+                    Environment.CurrentDirectory,
+                    Environment.CurrentDirectory + "/Live/Xavier",
+                    null,
+                    typeof(Program).Assembly
+                    );
+     });
 ```
 
 ## Examples
@@ -91,19 +102,24 @@ Here's an example of a `.xavier` file that demonstrates the usage of template st
 
 {{
 let username = "";
-var msalInstance = {};
 var target = '${this.target}'
 
 // JavaScript code here
 
-x{ 
-    @foreach( var k in items){
 
+}}
+
+x{ 
+// C# Code here
+
+    var Items = new[]{"item1","item2","item3"};
+    @foreach( var k in items){
+        <div>
+        @k
+        </div>
     }
 }x
 
-// More JavaScript code here
-}}
 ```
 
 Here is the code behind required for each component.
@@ -116,7 +132,6 @@ namespace MyNamespace{
     public partial class MyComponent : XavierNode
     {
         new public bool? ShouldRender = true;
-        public string[] Items = new[]{"item1","item2","item3"};
 
         public MyComponent(XavierNode xavier) : base(xavier){
         }
@@ -129,7 +144,6 @@ namespace MyNamespace{
 ## Information
 
 - Xavier is experimental and should be treated as such.
-- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the Xavier.Memory.Init(root,destination,assembly) for production.
 
 ## Contributing
 

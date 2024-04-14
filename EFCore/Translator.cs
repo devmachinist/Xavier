@@ -1,9 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 //namespace to contain the script
 namespace Xavier

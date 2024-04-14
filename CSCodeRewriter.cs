@@ -5,21 +5,11 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System.Buffers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Web.HttpUtility;
 using NuGet.Protocol;
-using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
-using System.Runtime.InteropServices.JavaScript;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace Xavier
 {

@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Hosting;
@@ -33,92 +19,7 @@ namespace Xavier
         public string? StaticFallback { get;set; }
         public List<DbContext>? Contexts { get; set; }
         public bool? AddAuthentication { get; set; } = true;
-        public string? JSAuth() => $@"//Authentication
-//We'll start by creating a function that authenticates the client in our application.
-//This will ensure the user is who they claim to be.
-function authenticateUser(username, password){{
-    const url = '{BaseURI}';
-    return fetch(url, {{
-        method: 'POST',
-        body: JSON.stringify({{
-            username: username,
-            password: password
-        }})
-    }}).then(res => res.json())
-    .then(data => data.result)
-    .catch(err => {{
-        console.log(err);
-        return false;
-    }});
-}}
-
-//Access Control
-//Next, we'll create a function to control who can access our application.
-//This will ensure only authenticated users can gain access.
-function accessControl(userId){{
-    const url = '{BaseURI}';
-    return fetch(url, {{
-        method: 'GET',
-        headers:{{
-            'Authorization': userId
-        }}
-    }}).then(res => res.json())
-    .then(data => data.result)
-    .catch(err => {{
-        console.log(err);
-        return false;
-    }});
-}}
-
-//Input Validation
-//Next, we'll create a function to validate user input.
-//This will ensure data is accurate and consistent.
-function inputValidation(inputData){{
-    let isValid = true;
-    for(let key in inputData){{
-        if(!inputData[key]) isValid = false;
-    }}
-    return isValid;
-}}
-
-//Cryptography
-//Next, we'll create a function for encryption.
-//This will ensure data sent over the network is secure.
-function encryption(data){{
-    //generate encryption key
-    const key = Crypto.randomBytes(32);
-    const iv = Crypto.randomBytes(16);
-
-    //encrypt data
-    let cipher = Crypto.createCipheriv('aes-256-cbc', key, iv);
-    let encryptedData = cipher.update(data);
-    encryptedData += cipher.final();
-
-    //return encrypted data
-    return {{
-        iv: iv.toString('hex'),
-        encryptedData: encryptedData.toString('hex')
-    }}
-}}
-
-//Authorization
-//Finally, we'll create a function to authorize user actions.
-//This will ensure the user has permission to perform certain tasks.
-function authorization(userId, action){{
-    const url = '{BaseURI}';
-    return fetch(url, {{
-        method: 'POST',
-        body: JSON.stringify({{
-            userId: userId,
-            action: action
-        }})
-    }}).then(res => res.json())
-    .then(data => data.result)
-    .catch(err => {{
-        console.log(err);
-        return false;
-    }});
-}}";
+        public string? JSAuth() => $@"";
         public Memory(){
             
         }
@@ -144,7 +45,8 @@ function authorization(userId, action){{
                     wb.Append($"var {xavier.Name} = new {xavier.Name.ToUpper()}();" +
                         $"if(window.location.pathname === {xavier.Name}.Route && {xavier.Name}.ShouldRender === true || {xavier.Name}.Route === '' && {xavier.Name}.ShouldRender === true){{" +
                 $"await {xavier.Name}.renderXidElements(document.body);"+
-                $"}}");
+                $"}}{xavier.Name}.AddListener();" +
+                $"");
 
                 }
                 
@@ -398,10 +300,6 @@ function authorization(userId, action){{
                     sw.WriteLine($"export const {dbSetName} = [];");
                 }
                 sw.WriteLine(EFToJS.TranslateEFToJS(dbContext));
-                foreach (var node in this.XavierNodes)
-                {
-                    XNodesExtension.MethodArray.AddRange(node.GetType().GetMethods());
-                }
                 await dbContext.DisposeAsync();
                 sw.Close();
             }
