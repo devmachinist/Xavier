@@ -45,14 +45,21 @@ Xavier Framework supports server-side rendering, which provides benefits like im
 
 1. Configure your web application to use Xavier Framework.
 2. Use the `app.MapXavierNodes` method in your application's configuration to map the Xavier nodes to specific routes. This method specifies the URL pattern and the destination directory for Xavier pages.
-3. Set the static fallback for the Xavier:
+3. Set the static fallback for Xavier:
 
 ```csharp
+<<<<<<< HEAD
 memory.StaticFallback("c:/fallback/index.html");
 
 //app build
 app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
 
+=======
+Xavier.Memory.StaticFallback("c:/fallback/index.html");
+app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
+
+
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 ```
 
 ## Initialization
@@ -70,14 +77,19 @@ using Xavier.AOT;
  Call the `Init` method to initialize Xavier with the desired parameters. This method builds your assembly into the specified destination. The last part of the destination path should have a `.js` extension.
 
 ```csharp
+<<<<<<< HEAD
 var memory = new Xavier.Memory();
 
+=======
+var memory = new Memory();
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 await memory.Init(root, destination, assembly);
 ```
 
 Or with AOT, pass in your memory object without calling memory.Init()...
 
 ```csharp
+<<<<<<< HEAD
 Parallel.Invoke(async () =>
     {
      await aot.Init(
@@ -88,6 +100,11 @@ Parallel.Invoke(async () =>
                     typeof(Program).Assembly
                     );
      });
+=======
+var memory = new Memory();
+var aot = new XAOT();
+await aot.Init(memory,root,destination,assembly);
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 ```
 
 ## Examples
@@ -104,8 +121,8 @@ Here's an example of a `.xavier` file that demonstrates the usage of template st
 let username = "";
 var target = '${this.target}'
 
-// JavaScript code here
 
+<<<<<<< HEAD
 
 }}
 
@@ -120,6 +137,22 @@ x{
     }
 }x
 
+=======
+
+// More JavaScript code here
+}}
+
+// C# code here
+
+x{
+    var items = new[]{"item1","item2","item3"};
+    @foreach( var k in items){
+      <div>
+        @k
+      </div>
+    }
+}x
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 ```
 
 Here is the code behind required for each component.
@@ -132,7 +165,10 @@ namespace MyNamespace{
     public partial class MyComponent : XavierNode
     {
         new public bool? ShouldRender = true;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
         public MyComponent(XavierNode xavier) : base(xavier){
         }
         public MyComponent(){
@@ -144,6 +180,10 @@ namespace MyNamespace{
 ## Information
 
 - Xavier is experimental and should be treated as such.
+<<<<<<< HEAD
+=======
+- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the memory.Init(root,destination,assembly) for production.
+>>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 
 ## Contributing
 
