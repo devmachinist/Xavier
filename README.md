@@ -11,6 +11,7 @@ The Xavier Framework is a powerful framework designed to facilitate the developm
   - [Server-Side Rendering](#server-side-rendering)
 - [Initialization](#initialization)
 - [Examples](#examples)
+- [Directives](#directives)
 - [Information](#information)
 - [Contributing](#contributing)
 - [License](#license)
@@ -48,19 +49,12 @@ Xavier Framework supports server-side rendering, which provides benefits like im
 3. Set the static fallback for Xavier:
 
 ```csharp
-<<<<<<< HEAD
-memory.StaticFallback("c:/fallback/index.html");
+var memory = new Xavier.Memory();
+memory.StaticFallback("c:/wwwroot/index.html");
 
 //app build
 app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
 
-=======
-Xavier.Memory.StaticFallback("c:/fallback/index.html");
-app.MapXavierNodes("{controller=Home}/{action=Index}/{id?}", Environment.CurrentDirectory + "/Pages", memory);
-
-
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
-```
 
 ## Initialization
 
@@ -70,41 +64,31 @@ To initialize Xavier in a .NET app, follow these steps:
 
 ```csharp
 using Xavier;
-//and
 using Xavier.AOT;
 ```
 
  Call the `Init` method to initialize Xavier with the desired parameters. This method builds your assembly into the specified destination. The last part of the destination path should have a `.js` extension.
 
 ```csharp
-<<<<<<< HEAD
 var memory = new Xavier.Memory();
 
-=======
-var memory = new Memory();
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
-await memory.Init(root, destination, assembly);
+await memory.Init(root, destination, assembly, isSPATrue);
 ```
 
 Or with AOT, pass in your memory object without calling memory.Init()...
 
 ```csharp
-<<<<<<< HEAD
+var memory = new Xavier.Memory();
 Parallel.Invoke(async () =>
     {
      await aot.Init(
                     memory,
                     Environment.CurrentDirectory,
-                    Environment.CurrentDirectory + "/Live/Xavier",
+                    Environment.CurrentDirectory + "/wwwroot/Xavier",
                     null,
                     typeof(Program).Assembly
                     );
      });
-=======
-var memory = new Memory();
-var aot = new XAOT();
-await aot.Init(memory,root,destination,assembly);
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 ```
 
 ## Examples
@@ -122,7 +106,6 @@ let username = "";
 var target = '${this.target}'
 
 
-<<<<<<< HEAD
 
 }}
 
@@ -137,22 +120,6 @@ x{
     }
 }x
 
-=======
-
-// More JavaScript code here
-}}
-
-// C# code here
-
-x{
-    var items = new[]{"item1","item2","item3"};
-    @foreach( var k in items){
-      <div>
-        @k
-      </div>
-    }
-}x
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
 ```
 
 Here is the code behind required for each component.
@@ -165,10 +132,6 @@ namespace MyNamespace{
     public partial class MyComponent : XavierNode
     {
         new public bool? ShouldRender = true;
-<<<<<<< HEAD
-
-=======
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
         public MyComponent(XavierNode xavier) : base(xavier){
         }
         public MyComponent(){
@@ -176,14 +139,116 @@ namespace MyNamespace{
     }
 }
 ```
+## Directives
+Xavier 8.0 and onward has a new feature called directives. You don't want to have multiple directives within a single element. Instead, only use one directive per element. Here are some examples of how they work.
+- Each
+```
+<div>
+  -[#each array]
+    <div> -[x.name] </div>
+    <div> -[x.description] </div>
+  -[/]
+</div>
+{{
+  //This is how you retrieve your component...
+  var component = window['${this.xid}'];
 
+  //This is how you access the array
+  component.array.push({name:"foo",description:"This is a description for the object named foo"});
+
+  //To remove all items and bound nodes in the array from the page do the following
+  component.array.splice(0, component.array.length);
+
+  //x always is the representation of the object. You will always use 'x' to target the object of the array, as shown.
+}}
+```
+The each directive stores and maintains the element. If your 'each' directive is created out of sequence on navigation(usually in an spa) then a new array will be created.
+Components themselves are stored as well so that they maintain state. Arrays or lists in the c# code behind must be used to initialize this directive. A standard array does not work.
+
+This directive uses a Xavier specific class called an ObservableArray that extends the Array type. This observable array creates a shadow that represents the elements on the page. So if you use 'splice()' or 'push' on the array, the nodes of the page reflect those changes without retargeting the parent element.
+
+- If
+```
+<button onclick="toggleMe()">toggle</button>
+<div>
+-[#if someBool]
+   <div>This bool is now true</div>
+-[/]
+</div>
+{{
+  //This is how you retrieve your component...
+  var component = window['${this.xid}'];
+
+  window.toggleMe = () => {
+    component.someBool = !component.someBool;
+  }
+
+}}
+```
+The 'if' directive acts just as you would expect.
+- Switch/Case
+```
+<div>
+  -[#switch option]
+    -[#case "option1"]
+      <div>This is option 1</div>
+    -[#case "option2"]
+      <div>This is option 2</div>
+    -[#case "option3"]
+      <div>This is option 3</div>
+    -[#default]
+      <div>This is the default</div>
+  -[/]
+</div>
+
+{{
+  //This is how you retrieve your component...
+  var component = window['${this.xid}'];
+
+  component.option = "None of the above"; // returns the default option
+}}
+```
+The 'switch' directive has only been tested with strings, but like all of these directives, may evolve in the future.
+- Variable
+```
+ <input id="titleInput" onchange="updateTitle(event)" type="text"/>
+ <div>
+  -[title]
+ </div>
+ <div>
+  -[content]
+ </div>
+ {{
+  //This is how you retrieve your component...
+  var component = window['${this.xid}'];
+
+  window.updateTitle = (e) => {
+    component.title = e.target.value;
+  }
+ }}
+```
+Xavier is always diffing the changes to all values within its components. If a change is detected it will update. Functions are ignored.
+- onUpdate()
+You can make changes using the onUpdate method built into each component.
+```
+<div id="updated">
+</div>
+{{
+  //This is how you retrieve your component...
+  var component = window['${this.xid}'];
+
+  component.onUpdate = () => {
+    console.log("${this.name} just updated")
+    document.getElementById("updated").innerHTML = "You changed me!"
+  }
+}}
+```
+
+All directives (excluding the variable directive) use -[/] as a closure. The examples shown above reflect that. Have fun with this new feature and let us know if you have any issues.
 ## Information
 
 - Xavier is experimental and should be treated as such.
-<<<<<<< HEAD
-=======
-- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the memory.Init(root,destination,assembly) for production.
->>>>>>> 77bcdb0bd50646e5000d11855349045f0efcf2f8
+- Known to cause thread pool starvation while using Devmachinist.Xavier.AOT . Simply stop the app when done testing and use the memory.Init(root,destination,assembly, isSPAbool) for production.
 
 ## Contributing
 

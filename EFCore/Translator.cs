@@ -102,14 +102,14 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.Where = function(predicate){\n";
-            generatedJS += "\t var result = [];\n";
-            generatedJS += "\t for(var i=0; i < this.length; i++){\n";
-            generatedJS += "\t \t if(predicate(this[i])){\n";
-            generatedJS += "\t \t \t result.push(this[i]);\n";
-            generatedJS += "\t \t }\n";
-            generatedJS += "\t }\n";
-            generatedJS += "\t return result;\n}\n\n";
+            //generatedJS += "Array.prototype.Where = function(predicate){\n";
+            //generatedJS += "\t var result = [];\n";
+            //generatedJS += "\t for(var i=0; i < this.length; i++){\n";
+            //generatedJS += "\t \t if(predicate(this[i])){\n";
+            //generatedJS += "\t \t \t result.push(this[i]);\n";
+            //generatedJS += "\t \t }\n";
+            //generatedJS += "\t }\n";
+            //generatedJS += "\t return result;\n}\n\n";
 
             return generatedJS;
         }
@@ -118,14 +118,14 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.First = function(predicate){\n";
-            generatedJS += "\t var result = [];\n";
-            generatedJS += "\t for(var i=0; i < this.length; i++){\n";
-            generatedJS += "\t \t if(predicate(this[i])){\n";
-            generatedJS += "\t \t \t result.push(this[i]);\n";
-            generatedJS += "\t \t }\n";
-            generatedJS += "\t }\n";
-            generatedJS += "\t return result[0];\n}\n\n";
+            //generatedJS += "Array.prototype.First = function(predicate){\n";
+            //generatedJS += "\t var result = [];\n";
+            //generatedJS += "\t for(var i=0; i < this.length; i++){\n";
+            //generatedJS += "\t \t if(predicate(this[i])){\n";
+            //generatedJS += "\t \t \t result.push(this[i]);\n";
+            //generatedJS += "\t \t }\n";
+            //generatedJS += "\t }\n";
+            //generatedJS += "\t return result[0];\n}\n\n";
 
             return generatedJS;
         }
@@ -135,13 +135,13 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.SingleOrDefault = function(predicate){\n";
-            generatedJS += "\t for(var i=0; i < this.length; i++){\n";
-            generatedJS += "\t \t if(predicate(this[i])){\n";
-            generatedJS += "\t \t \t return this[i];\n";
-            generatedJS += "\t \t }\n";
-            generatedJS += "\t }\n";
-            generatedJS += "\t return null;\n}\n\n";
+            //generatedJS += "Array.prototype.SingleOrDefault = function(predicate){\n";
+            //generatedJS += "\t for(var i=0; i < this.length; i++){\n";
+            //generatedJS += "\t \t if(predicate(this[i])){\n";
+            //generatedJS += "\t \t \t return this[i];\n";
+            //generatedJS += "\t \t }\n";
+            //generatedJS += "\t }\n";
+            //generatedJS += "\t return null;\n}\n\n";
 
             return generatedJS;
         }
@@ -189,8 +189,8 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.Add = function(entity){\n";
-            generatedJS += "\t this.push(entity);\n}\n\n";
+            //generatedJS += "Array.prototype.Add = function(entity){\n";
+            //generatedJS += "\t this.push(entity);\n}\n\n";
 
             return generatedJS;
         }
@@ -200,9 +200,9 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.Remove = function(entity){\n";
-            generatedJS += "\t var index = this.indexOf(entity);\n";
-            generatedJS += "\t this.splice(index,1);\n}\n\n";
+            //generatedJS += "Array.prototype.Remove = function(entity){\n";
+            //generatedJS += "\t var index = this.indexOf(entity);\n";
+            //generatedJS += "\t this.splice(index,1);\n}\n\n";
 
             return generatedJS;
         }
@@ -212,9 +212,9 @@ namespace Xavier
         {
             string generatedJS = "";
 
-            generatedJS += "Array.prototype.Update = function(entity){\n";
-            generatedJS += "\t var index = this.indexOf(entity);\n";
-            generatedJS += "\t this[index] = entity;\n}\n\n";
+            //generatedJS += "Array.prototype.Update = function(entity){\n";
+            //generatedJS += "\t var index = this.indexOf(entity);\n";
+            //generatedJS += "\t this[index] = entity;\n}\n\n";
 
             return generatedJS;
         }

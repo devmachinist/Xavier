@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
@@ -329,7 +328,7 @@ namespace Xavier
                             diagnostic.Severity == DiagnosticSeverity.Error);
                         foreach (Diagnostic diagnostic in failures)
                         {
-                            Console.Error.WriteLine(" {0}: {1}", diagnostic.Id, diagnostic.GetMessage());
+                            Console.Error.WriteLine(" {0}: {1}", diagnostic.Id, diagnostic.GetMessage() + " This is where");
                         }
                     }
                     else
@@ -359,7 +358,7 @@ namespace Xavier
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + " Problem from RunCSAssembly");
             }
             GC.Collect();
             return codeResponse;

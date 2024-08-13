@@ -1,5 +1,12 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Text.RegularExpressions;
 using System.Text;
@@ -26,6 +33,7 @@ namespace Xavier
         public string ClassBody(Memory memory) => GenerateJavaScriptClass(this, this.GetType(), memory);
         public string Route { get; set; }
         public State state { get; set; }
+        public string HTML { get; set; } = "";
         public string Scripts { get; set; }
         public string PyImports { get; set; } = "import json\n";
         public bool ShouldRender { get; set; } = true;
@@ -194,9 +202,10 @@ namespace Xavier
 
             StringBuilder sb = new StringBuilder();
             var propertyRun = 0;
-            sb.AppendLine($" " +
-                $" class {Node.Name.ToUpper()} {{");
-            sb.AppendLine($"constructor(data){{");
+            sb.AppendLine($@"
+class {Node.Name.ToUpper()} extends XavierNode {{
+    constructor(data){{
+        super();");
             Type[] inheritedTypes = XAssembly.GetTypes().Where(t => t.IsSubclassOf(typeof(XavierNode))).ToArray();
             List<Type> checkTypes = new List<Type>();
             foreach (Type inheritedType in inheritedTypes)
@@ -215,6 +224,7 @@ namespace Xavier
 
                     foreach (var xprop in instance.Unwrap().GetType().GetProperties().ToList())
                     {
+                        var fullprop = xprop.GetValue(instance.Unwrap());
                         if (xprop.Name == "Code")
                         {
                             continue;
@@ -233,7 +243,10 @@ namespace Xavier
                         }
                         else if (xprop.Name == "Scripts")
                         {
-                            sb.AppendLine($@"this.{xprop.Name} = `{this.Scripts}`;");
+                        }
+                        else if (xprop.Name == "HTML")
+                        {
+
                         }
 
                         else if (xprop.Name == "Route")
@@ -242,8 +255,13 @@ namespace Xavier
                         }
                         else if (xprop.PropertyType.ToString().Contains("List"))
                         {
-                            sb.AppendLine($@"this.{xprop.Name} = '{JsonSerializer.Serialize(xprop.GetValue(instance.Unwrap())) ?? ""}';");
+                            sb.AppendLine($@"this.{xprop.Name} = new ObservableArray(...{JsonSerializer.Serialize(xprop.GetValue(instance.Unwrap())?? Array.Empty<string>())});");
                         }
+                        else if (xprop.PropertyType.IsArray)
+                        {
+                            sb.AppendLine($@"this.{xprop.Name} = new ObservableArray(...{JsonSerializer.Serialize(xprop.GetValue(instance.Unwrap())?? Array.Empty<string>())});");
+                        }
+
                         else
                         {
                             try
@@ -258,177 +276,14 @@ namespace Xavier
                     }
                 }
             }
-            sb.AppendLine($@"
-this.ScriptRender = true;
-this.Element = {{}};
-this.InnerHTML = 'unset';
-}}
-findLargestNodeDepth(node = document, currentDepth = 0) {{
-  if (!node.hasChildNodes()) {{
-    return currentDepth;
-  }} else {{
-    let maxDepth = currentDepth;
-    const children = node.childNodes;
-    for (let i = 0; i < children.length; i++) {{
-      const child = children[i];
-      if (child.nodeType === Node.ELEMENT_NODE) {{
-        const childDepth = this.findLargestNodeDepth(child, currentDepth + 1);
-        maxDepth = Math.max(maxDepth, childDepth);
-      }}
+            sb.Append($@"}}
+    GetScripts(){{
+        return `{this.Scripts}`;
     }}
-    return maxDepth;
-  }}
-}}
-async replaceElements(target){{
-    const allTargets = document.getElementsByTagName(target);
-    let attempts = 0;
-    try{{
-    let elCount = 0;
-    Array.from(allTargets).forEach(async (elem) => {{
-    if(elem.hasAttribute('xid')) return;
-    this.Element = elem;
-        elCount++;
-        let attrs = this.evalAttrs();
-        this.setAttrs(attrs, elCount);
-        this.setPropertyFromAttribute(this.Element);
-        let body = """";
-  body = this.Element.innerHTML;
-   while(this.Element.firstChild) this.Element.removeChild(this.Element.lastChild);
-  // Add it to the InnerHTML property of the object
-//  window[`{this.Xid}${{elCount}}`].InnerHTML = body;
-//  window[`{this.Xid}${{elCount}}`].Render(window[`{this.Xid}${{elCount}}`]);
-        
-        this.InnerHTML = body;
-        this.Element.insertAdjacentHTML('afterbegin',`{Node.Content(memory).Replace("/", "\\/").Replace("`", "\\`")}`);
-                
-      if(this.ScriptRender === true){{
-  var script = document.createElement('script');
-  script.setAttribute(""async"", ""async"");
-  script.setAttribute(""type"", ""module"");
-  script.setAttribute(""xid"",`${{this.Xid}}`)
-        if(window.location.pathname === this.Route && this.ScriptRender === true || this.Route === '' && this.ScriptRender === true){{
-            script.insertAdjacentHTML('afterbegin',`{this.Scripts}`);
-            document.body.append(script);
-            this.ScriptRender = false; 
-        }}
-         this.bindToWindow();
-      }}
-  }});
-}}
-  catch(ex){{console.log(ex);}}
-}}
-
-evalAttrs(){{
-    let attrs = {{}};
-    let attributes = this.Element.attributes;
-    for (let i=0 ; i<attributes.length ; i++){{
-        let attr = attributes[i];
-            this[attr.name] = attr.value;
-            attrs[attr.name] = attr.value;
-   }}
-    return attrs;
-
-}}
-
-setAttrs(attrs, count){{
-    for (let attrName in attrs){{
-        this.Element.setAttribute(attrName, attrs[attrName]);
+    GetHTML(){{
+        return `{this.Content(memory).Replace("/", "\\/").Replace("`", "\\`")}`; 
     }}
-            this.Element.setAttribute('xid',`${{this.Xid}}${{count.toString()}}`);            
-}}
-async renderXidElements(el){{
-    try{{
-            let item = eval(`new {this.Name.ToUpper()}()` );
-
-            if(el.hasAttribute('xid'))
-            {{
-                item.ShouldRender = false;
-                item.ScriptRender = false;
-            }}
-            await item.Render();
-             Array.from(el.children).forEach(async (child)=> 
-                {{  
-                    await item.renderXidElements(child);
-       
-                    Array.from(child.children).forEach(async (gchild)=> 
-                    {{  
-                        await item.renderXidElements(gchild)
-                        }});
-
-
-                }});
-     }}
-  catch(ex){{console.log(ex);}}
-}}
-setPropertyFromAttribute(elem) {{
-  for (let attr in elem.attributes){{
-      this[attr.name] = attr.value;
-  }}
-}}
-
-bindToWindow(){{
-  let xid = this.Element.getAttribute('xid');
-  let className = this.Element.className;
-  let data = this.Element.dataset;
-
-
-    this.Element.className = className; //this line sets the className back to the original for consistency
-    this.Element.setAttribute('xid', xid); //this line sets the xid to the original for consistency
-
-    if(!window[xid]){{
-    window[xid] = new {Node.Name.ToUpper()}(this); //this line instantiates the class with the given data
-    this.scanWindowObjectsForRoutes();
-     window[xid].Element = this.Element;
-let element = window[xid].Element
-
-let attributeObserver = new MutationObserver(mutations => {{
-  mutations.forEach(mutation => {{
-    if (mutation.type === ""attributes"") {{
-    }}
-  }});
-}});
-
-attributeObserver.observe(element, {{
-  attributes: true
-}});     
-  
-}}
-
-return window[xid];
-}}
-  async scanWindowObjectsForRoutes() {{
-}}
-getElementByXid(xid)
-    {{
-        if(xid){{
-            return document.querySelector(""[xid='"" + this.xid + ""']""); 
-    }}
-
-                return document.querySelector(""[xid='"" + xid + ""']""); 
-    }}
-ScriptInit(){{
-}}
-
-async Render(){{
-    try{{
-        if(this.ShouldRender === true){{
-          await this.replaceElements('{Node.Name.ToLower()}');
-          this.ShouldRender = false;
-        }}
-    }}
-    catch(ex){{console.log(ex);
-    }}
-}}
-AddListener(){{    
-    window.addEventListener('DOMContentLoaded', (event) => {{
-
-        if(window.location.pathname === {Node.Name}.Route && {Node.Name}.ShouldRender === true || {Node.Name}.Route === '' && {Node.Name}.ShouldRender === true){{
-        this.renderXidElements(document.body);
-        }}
-    }});
-}}
-    ");
-            sb.AppendLine("}");
+}}");
             GC.Collect();
             return sb.ToString();
         }
@@ -708,6 +563,22 @@ AddListener(){{
                 });
                 return "";
             }
+        }
+        public XavierNode(XavierNode node)
+        {
+            XAssembly = node.XAssembly;
+            Name = node.Name;
+            Code = node.Code;
+            Scripts = node.Scripts;
+            Path = node.Path;
+            dataset = node.dataset;
+            Xid = node.Xid;
+            Route = node.Route;
+            state = node.state;
+            PyImports = node.PyImports;
+            ShouldRender = node.ShouldRender;
+            BaseUrl = node.BaseUrl;
+            Authorize = node.Authorize;
         }
         public XavierNode()
         {
